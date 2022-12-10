@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sort"
 	"strings"
 )
 
@@ -75,19 +76,20 @@ func filesPart1() {
 
 	sum := 0
 	for _, dirsize := range dirsizes {
-		sum += dirsize
-	}
-	fmt.Printf("Sum of dirs: %d\n", sum)
-	totalspace := 70000000
-	minneeded := 30000000
-	freespace := totalspace - diskused
-	for _, dirsize := range dirsizes {
-		if dirsize+freespace >= minneeded {
-			fmt.Printf("Size of dir to remove: %d\n", dirsize)
+		if dirsize <= 100000 {
+			sum += dirsize
 		}
 	}
-
-	//fmt.Printf("free space: %d\n", totalspace-diskused)
+	fmt.Printf("Part 2 - Sum of dirs: %d\n", sum)
+	minneeded := 30000000
+	freespace := 70000000 - diskused
+	sort.Ints(dirsizes)
+	for _, dirsize := range dirsizes {
+		if dirsize+freespace >= minneeded {
+			fmt.Printf("Part2 - Size of dir to remove: %d\n", dirsize)
+			break
+		}
+	}
 }
 
 func printDirs(dir *file, level int, dirsizes *[]int) int {
