@@ -119,21 +119,6 @@ func newFile(name string, parentDir *file, size int, typ int, subdirs ...*file) 
 	return f
 }
 
-func filesPart2() {
-	f, err := os.Open("inputs/input7.txt")
-	if err != nil {
-		log.Fatalln("Unable to open file", err)
-	}
-	defer f.Close()
-
-	scanner := bufio.NewScanner(f)
-
-	for scanner.Scan() {
-
-	}
-}
-
 func main() {
 	filesPart1()
-
 }
