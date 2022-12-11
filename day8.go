@@ -7,11 +7,7 @@ import (
 	"os"
 )
 
-//const (
-//	UP = {1,0}
-//)
-
-func treesPart1() {
+func trees() {
 	f, err := os.Open("inputs/input8.txt")
 	if err != nil {
 		log.Fatalln("Unable to open file", err)
@@ -30,21 +26,31 @@ func treesPart1() {
 		}
 		forest = append(forest, treeline)
 	}
-	visibleTrees := 0 //len(forest)*2 + len(forest[0])*2 - 4
+	visibleTrees := 0
 	for i := 0; i < len(forest); i++ {
 		for j := 0; j < len(forest[0]); j++ {
 			if findTallerTrees(i, j, &forest) {
 				visibleTrees++
 				fmt.Printf("\u001b[32m%d\u001b[0m ", forest[i][j])
-
 				continue
 			}
 			fmt.Printf("%d ", forest[i][j])
 		}
 		print("\n")
 	}
+	fmt.Println("Part 1 - Number of visible trees is:", visibleTrees)
 
-	fmt.Println("Number of visible trees is:", visibleTrees)
+	bestScore := 0
+	for i := 0; i < len(forest); i++ {
+		for j := 0; j < len(forest[0]); j++ {
+			score := findBestScenicScore(i, j, &forest)
+			if score > bestScore {
+				bestScore = score
+			}
+		}
+	}
+
+	fmt.Println("Part 2 - The best scenic score is:", bestScore)
 }
 
 func findTallerTrees(row, column int, forest *[][]int) bool {
@@ -75,29 +81,36 @@ func findTallerTrees(row, column int, forest *[][]int) bool {
 	return false
 }
 
-//this somehow finds tallest trees
-func findTallestTrees(row, column int, forest *[][]int) bool {
+func findBestScenicScore(row, column int, forest *[][]int) int {
 	//				UP DOWN LEFT RIGHT
 	var vectors = [][]int{{1, 0}, {-1, 0}, {0, -1}, {0, 1}}
+	score := 1
 	for _, vector := range vectors {
 		i := 1
+		visibleTrees := 0
 		for {
-			y, x := i*vector[0], i*vector[1]
+			y := i*vector[0] + row
+			x := i*vector[1] + column
 
-			//out of bounds
-			if y < 0 || x < 0 || y == len(*forest) || x == len((*forest)[0]) {
+			//ak skor dojde na kraj ako najde vysoky strom tak true
+			if y < 0 || x < 0 || y > len(*forest)-1 || x > len((*forest)[0])-1 {
+				score *= visibleTrees
 				break
 			}
 			//ak je na najdenej pozicii vyssi alebo rovnaky strom ako na hladanom mieste
-			if (*forest)[y][x] >= (*forest)[row][column] {
-				return false
+			if (*forest)[y][x] < (*forest)[row][column] {
+				visibleTrees++
+			} else if (*forest)[y][x] >= (*forest)[row][column] {
+				visibleTrees++
+				score *= visibleTrees
+				break
 			}
 			i++
 		}
 	}
-	return true
+	return score
 }
 
 func main() {
-	treesPart1()
+	trees()
 }
